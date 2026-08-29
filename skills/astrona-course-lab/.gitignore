@@ -1,0 +1,19 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Python bytecode from scripts/
+__pycache__/
+*.py[cod]
+
+# Runtime output — the skill generates these into a course/lab repo, never here.
+# Listed so a stray run from inside this folder can't dirty the tree.
+/report.xml
+**/report.xml
+/blueprint-cache/
+**/sections/**/playground/

@@ -1,0 +1,29 @@
+name: astrona test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lab-lifecycle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install astrona CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/astrona-io/astrona-cli/main/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Check dependencies
+        run: astrona check
+
+      - name: Full lab lifecycle
+        run: astrona test -c . --junit-xml=report.xml
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: junit
+          path: report.xml

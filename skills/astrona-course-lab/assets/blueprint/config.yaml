@@ -1,0 +1,46 @@
+# {{title}} ({{path_id}})
+# Astrona hands-on lab config. Schema: internal/config.LabConfig.
+# Omit `runtime:` for a kind cluster (default). For a qemu VM lab, add a
+# `runtime:` block — see references/astrona-cli.md in the skill.
+
+metadata:
+  name: "{{slug}}"
+  docs:
+    prerequisites: "docs/prerequisites.md"
+    examQuestion: "docs/exam-question.md"
+    caseStudy: "docs/case-study.md"
+    guide: "docs/step-by-step-guide.md"
+
+bootstrap:
+  init:
+    - name: "setup"
+      description: "Pre-work only — must not build the graded state"
+      type: "file"
+      source: "bootstrap/setup.sh"
+  manifests: []
+
+testing:
+  manifests:
+    - name: "solution"
+      description: "Reference solution applied by `astrona test` in CI"
+      type: "folder"
+      source: "solution"
+
+validation:
+  checks:
+    - name: "TODO: rename to the observable end state"
+      type: "resourceExists"
+      resource: "namespace/lab-ns"
+  script:
+    name: "verify-content"
+    description: "Checks actual content/behaviour, not just existence"
+    type: "file"
+    source: "validate.sh"
+
+teardown:
+  init:
+    - name: "dump-logs"
+      description: "Best-effort state capture before teardown"
+      type: "file"
+      source: "teardown/dump-logs.sh"
+  keepCluster: false
