@@ -6,12 +6,38 @@
 <!-- astrona:playground -->
 <!-- Leave the playground callout the lab skill inserted here exactly as it is. -->
 
-{{Begin with a plain-language explanation of the concept and its purpose.}}
+{{One or two sentences: what this module is about and why it is worth the
+reader's time.}}
 
-## {{Core concept}}
+## Learning objectives
 
-{{Define the important terminology and explain how the parts relate. Explain the
-mental model before any command.}}
+<!-- Always. 3-6 lines. Concrete, measurable verbs. Not "understand". -->
+
+After this module you can:
+
+- {{list / configure / explain / diagnose …}}
+- {{…}}
+- {{…}}
+
+## Before you start
+
+<!-- Always. Short. Prior knowledge assumed + what the playground already gives
+     you. -->
+
+{{What the reader should already know. What is already installed / running in
+the playground so they do not have to set it up.}}
+
+## {{Where this fits}}
+
+<!-- OPTIONAL. Keep only if the subject is easy to learn in isolation and misuse
+     without context. One short paragraph. Delete the heading otherwise. -->
+
+{{How this subject connects to adjacent topics and the larger system.}}
+
+## {{First concept}}
+
+{{Explain it. Concrete instance first, then the general rule. At most one
+analogy, flagged, with its limits.}}
 
 > [!TIP]
 > **Try it — {{what the reader will see}}**
@@ -28,9 +54,14 @@ mental model before any command.}}
 >
 > {{One sentence tying the output back to the concept above.}}
 
+<!-- OPTIONAL recap — keep only if this section was long. -->
+{{One or two sentences: what the reader now knows.}}
+
 ## {{Second concept}}
 
-{{Explain it. Concrete example first, then the general rule.}}
+{{Explain it. Then, only if there is a second thing worth running, write the
+prose that sets it up before the next Try it — never two [!TIP] blocks in a
+row.}}
 
 > [!TIP]
 > **Try it — {{what the reader will see}}**
@@ -39,10 +70,20 @@ mental model before any command.}}
 > {{inspection command; read-only where possible}}
 > ```
 >
-> {{What changed or what the output means, and how it maps to the idea. Note that
-> hostnames, addresses, and IDs are examples.}}
+> {{What changed or what the output means, and how it maps to the idea.
+> Hostnames, addresses, and IDs are examples.}}
+
+<!-- OPTIONAL. Keep only if this subject has real, known beginner traps. -->
+> [!WARNING]
+> **Common pitfalls**
+>
+> - {{The mistake / misconception}} — {{the correction}}.
+> - {{…}}
 
 ## {{Operational considerations}}
 
 {{Safety, persistence across restart, platform differences, troubleshooting —
 where relevant. No grading language, no task list.}}
+
+<!-- The chapter ends when the subject is covered. No "Keep going" / "Next
+     steps" / "Check your understanding" section. -->

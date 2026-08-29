@@ -58,7 +58,24 @@ Drop the folder at `~/.claude/skills/astrona-course-expand-material/` (or
    under the H1 is left untouched. No grading language — a playground has no
    task, no `astrona submit`, no pass/fail.
 
-5. **Validate** with `scripts/validate_chapter.py FILE [--with-playground]`.
+5. **Validate** with `scripts/validate_chapter.py FILE [--module] [--with-playground]`.
+
+## Chapter shape (module course.md)
+
+Built for a student reading alone. **Always:** the module's own H1 title (no
+`Chapter N:`), `## Learning objectives` (3–6 measurable "after this you can …"),
+`## Before you start` (prior knowledge + what the playground already provides),
+then the concept → Try-it loop.
+
+**Only when the subject needs it — never as filler:** `## Where this fits` (one
+context paragraph), `> [!WARNING]` **Common pitfalls** (real, known beginner
+traps with corrections), a one-line **section recap** after a long section. See
+[`references/chapter-style.md`](references/chapter-style.md).
+
+**Never:** "Check your understanding" / recall questions / `<details>` quiz
+blocks (that is `astrona-course-generate-assessment`), or a closing
+"Keep going" / "Next steps" section — a chapter ends when the subject is
+covered.
 
 ## Usage
 
@@ -86,10 +103,20 @@ deterministic checks:
 | Check | Behaviour |
 | --- | --- |
 | Title | `--module`: exactly one `#` H1, **no** `Chapter N:` prefix. Without it: `# Chapter N: <title>` required. |
+| `## Learning objectives` present, 3–6 list items | `--module` only |
+| `## Before you start` present | `--module` only |
 | Balanced ` ``` ` fences | always |
 | No `## Step-by-step` section | always |
+| No `Check your understanding` heading or `<summary>Answer</summary>` quiz block | always |
+| No closing `Keep going` / `Next steps` / `What's next` section | always |
+| No two `> [!TIP]` checkpoints in a row (a bare heading between them does not count as explanation) | always |
 | Rejects `Guided Practice Lab`, `astrona submit`, `astrona test`, `PROCTOR:` | always |
 | Rejects `astrona run`, `astrona destroy` | rejected without `--with-playground`; allowed with it (callout + Try it blocks) |
+
+The validator does **not** require pitfalls, recaps, or "where this fits" —
+those are judgement calls, added only when the subject needs them. Objectives
+heading synonyms accepted: `Objectives`, `What you'll be able to do`. Prereqs
+synonyms: `Prerequisites`, `What you need to know first`.
 
 Exit `0` clean, `1` on errors, `2` on bad args. Use `--module` for an in-place
 module `course.md`; add `--with-playground` when the chapter was woven against a
@@ -102,8 +129,8 @@ astrona-course-expand-material/
 ├── SKILL.md                              # the skill definition Claude follows
 ├── README.md                             # this file
 ├── references/
-│   ├── chapter-style.md                  # prose style rules
-│   └── playground-weaving.md             # how to interleave text + checkpoints
+│   ├── chapter-style.md                  # prose rules (analogies, pitfalls, recaps)
+│   └── playground-weaving.md             # interleaving text with Try-it checkpoints
 ├── scripts/
 │   ├── playground_status.sh              # is this module linked to a playground?
 │   └── validate_chapter.py               # structural validator
@@ -116,9 +143,15 @@ astrona-course-expand-material/
 
 ## Notes
 
+- **Every element earns its place.** Objectives, prerequisites, analogies,
+  warnings, recaps — each is added because this subject needs it, never because
+  a template has the slot. A short honest chapter beats a padded one.
 - Do not add invented facts, citations, labs, quizzes, or a next chapter without
   a request.
 - **Try it** checkpoints are optional, ungraded, and reference a running
   sandbox — they are not guided-lab framing. Guided step lists, grading, and
   `astrona submit` belong to `astrona-course-lab`, not here.
-- The prose must teach the chapter on its own; checkpoints are additive.
+- No knowledge checks and no closing "Keep going" section. Quizzes are
+  `astrona-course-generate-assessment`'s job; a chapter ends when the subject is
+  covered.
+- The prose must teach the chapter on its own; Try-it checkpoints are additive.

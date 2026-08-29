@@ -1,19 +1,42 @@
 # Chapter {{number}}: {{title}}
 
-{{Begin with a plain-language explanation of the concept and its purpose.}}
+<!-- Standalone chapter (no linked playground). Keeps the "Chapter N:" title.
+     No Try-it checkpoints. Same "earn its place" rule as the module template:
+     include a section only if this subject needs it. -->
+
+{{One or two sentences: what this chapter covers and why it matters.}}
+
+## {{Learning objectives}}
+
+<!-- Keep for a teaching chapter; drop for a short reference note. 3-6 lines,
+     measurable verbs. -->
+
+After this chapter you can:
+
+- {{list / configure / explain / diagnose …}}
+- {{…}}
 
 ## {{Core concept}}
 
-{{Define the important terminology and explain how the parts relate.}}
+{{Define the terminology and explain how the parts relate. Concrete instance
+before the general rule. At most one analogy, flagged, with its limits.}}
 
-## {{Inspecting or using the feature}}
+## {{Using or inspecting the feature}}
 
 ```bash
 {{example command}}
 ```
 
-{{Explain the command, representative output, and important limitations.}}
+{{State the shell / host / context assumed. Explain the command, representative
+output (an example), and important limitations. Say whether a change survives a
+restart.}}
+
+<!-- OPTIONAL. Only real, known beginner traps for this subject. -->
+> [!WARNING]
+> **Common pitfalls**
+>
+> - {{The mistake / misconception}} — {{the correction}}.
 
 ## {{Operational considerations}}
 
-{{Describe safety, persistence, platform differences, or troubleshooting where relevant.}}
+{{Safety, persistence, platform differences, troubleshooting — where relevant.}}

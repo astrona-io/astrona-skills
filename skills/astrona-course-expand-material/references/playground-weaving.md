@@ -17,6 +17,36 @@ Only concepts with something observable get a checkpoint. Do not force one onto
 every heading. A chapter with three well-placed checkpoints beats one with ten
 filler ones.
 
+## One concept, then one checkpoint — never a stack
+
+Every `> [!TIP]` block must sit directly after the prose that explains the idea
+it exercises. The reader reaches the block already knowing the terms, the mental
+model, and what the command is about to show.
+
+**Do not place two (or three) `> [!TIP]` blocks back to back.** A run of
+checkpoints with no teaching between them leaves the reader running commands
+without knowing why the second and third exist. If a section is worth two
+hands-on steps, write the setup for the second step — what it adds, what to look
+for — as normal prose before its block.
+
+```
+   explain concept A  →  [!TIP] try A  →  explain concept B  →  [!TIP] try B
+```
+
+not
+
+```
+   explain concept A  →  [!TIP] try A  →  [!TIP] try B  →  [!TIP] try C
+```
+
+## No knowledge checks
+
+Do not add "Check your understanding" prompts, recall questions, or `<details>`
+quiz blocks. A course chapter teaches; graded and self-check questions are
+`astrona-course-generate-assessment`'s job. You may ask the reader in prose to
+*predict* an output before a Try it runs it — that is teaching, not a quiz — but
+no hidden-answer blocks.
+
 ## Try it block format
 
 ```markdown
