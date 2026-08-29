@@ -1,0 +1,19 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Python bytecode from scripts/
+__pycache__/
+*.py[cod]
+
+# Runtime output — the skill expands chapters into a course repo, never here.
+# Listed so a stray run from inside this folder can't dirty the tree.
+/course.md
+/courses.md
+**/sections/**/course.md
+**/sections/**/courses.md
