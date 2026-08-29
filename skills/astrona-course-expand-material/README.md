@@ -80,18 +80,20 @@ path to the course file or the module dir. Status is printed to stdout; exit is
 
 ## Validator
 
-`scripts/validate_chapter.py FILE [--with-playground]` runs deterministic checks:
+`scripts/validate_chapter.py FILE [--module] [--with-playground]` runs
+deterministic checks:
 
-| Check | Always | `--with-playground` only |
-| --- | --- | --- |
-| `# Chapter N:` title present | ✓ | |
-| Balanced ` ``` ` fences | ✓ | |
-| No `## Step-by-step` section | ✓ | |
-| Rejects `Guided Practice Lab`, `astrona submit`, `astrona test`, `PROCTOR:` | ✓ | |
-| Rejects `astrona run`, `astrona destroy` | ✓ (plain chapter) | allowed (callout + Try it) |
+| Check | Behaviour |
+| --- | --- |
+| Title | `--module`: exactly one `#` H1, **no** `Chapter N:` prefix. Without it: `# Chapter N: <title>` required. |
+| Balanced ` ``` ` fences | always |
+| No `## Step-by-step` section | always |
+| Rejects `Guided Practice Lab`, `astrona submit`, `astrona test`, `PROCTOR:` | always |
+| Rejects `astrona run`, `astrona destroy` | rejected without `--with-playground`; allowed with it (callout + Try it blocks) |
 
-Exit `0` clean, `1` on errors, `2` on bad args. Add `--with-playground` whenever
-the chapter was woven against a playground.
+Exit `0` clean, `1` on errors, `2` on bad args. Use `--module` for an in-place
+module `course.md`; add `--with-playground` when the chapter was woven against a
+playground.
 
 ## Layout
 

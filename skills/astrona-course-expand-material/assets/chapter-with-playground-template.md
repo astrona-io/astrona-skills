@@ -1,4 +1,7 @@
-# Chapter {{number}}: {{title}}
+# {{Module title}}
+
+<!-- Keep the module's own H1 title. No "Chapter N:" prefix — the platform
+     orders modules. -->
 
 <!-- astrona:playground -->
 <!-- Leave the playground callout the lab skill inserted here exactly as it is. -->

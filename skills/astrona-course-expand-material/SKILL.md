@@ -44,18 +44,23 @@ Read [references/playground-weaving.md](references/playground-weaving.md) before
 
 ## 4. Expansion rules (always)
 
-1. Preserve the topic, chapter number, intended audience, and useful examples.
-2. Correct clear inaccuracies and soften claims that are not universally true.
-3. Define unfamiliar terms before using them and explain the mental model before commands.
-4. Remove guided-lab headings, root-shell setup, and graded exercises unless requested. (Playground **Try it** checkpoints from section 3b are not guided-lab framing — they are optional, ungraded, and reference a running sandbox.)
-5. Retain useful commands as reference examples. Explain arguments, side effects, privileges, temporary state, and persistent alternatives when relevant.
-6. Treat addresses, hostnames, interface names, and command output as examples. Warn before a command that can interrupt networking or a remote session.
+1. **Title.** For an in-place module `course.md`, keep the module's own H1 title (the topic name) — one `#` H1, no `Chapter N:` prefix, no numbering. The course platform orders modules; a `Chapter 1:` in the title makes no sense there. Only the loose-notes fenced output (section 1) uses `# Chapter N: <title>`.
+2. Preserve the topic, intended audience, and useful examples.
+3. Correct clear inaccuracies and soften claims that are not universally true.
+4. Define unfamiliar terms before using them and explain the mental model before commands.
+5. Remove guided-lab headings, root-shell setup, and graded exercises unless requested. (Playground **Try it** checkpoints from section 3b are not guided-lab framing — they are optional, ungraded, and reference a running sandbox.)
+6. Retain useful commands as reference examples. Explain arguments, side effects, privileges, temporary state, and persistent alternatives when relevant.
+7. Treat addresses, hostnames, interface names, and command output as examples. Warn before a command that can interrupt networking or a remote session.
 
 Read [references/chapter-style.md](references/chapter-style.md) before drafting. Do not add invented facts, citations, labs, quizzes, or a next chapter without a request.
 
 ## 5. Validate
 
-On a created or edited Markdown file, run `scripts/validate_chapter.py FILE` — add `--with-playground` when section 3b applied, so the callout and the `astrona run` / `astrona destroy` lines in checkpoints are allowed while guided-lab and grading framing still fail. Resolve every reported error.
+On a created or edited Markdown file, run `scripts/validate_chapter.py FILE [flags]` and resolve every reported error:
+
+- **In-place module `course.md`** — add `--module`: requires exactly one `#` H1 and forbids a `Chapter N:` prefix in it.
+- **Loose-notes fenced chapter** — no `--module`: requires the `# Chapter N: <title>` form.
+- **Woven against a playground (3b)** — also add `--with-playground`: allows the callout and the `astrona run` / `astrona destroy` lines in checkpoints; guided-lab and grading framing still fail.
 
 ## 6. Report
 
