@@ -27,6 +27,12 @@ After this module you can:
 {{What the reader should already know. What is already installed / running in
 the playground so they do not have to set it up.}}
 
+<!-- For a qemu playground, give the shell command ONCE here, then later
+     checkpoints just show what to run inside the VM. The machine is named
+     `astro-<slug>` (Astrona prefixes it), where <slug> is metadata.name in
+     playground/config.yaml — e.g. `astrona ssh astro-{{slug}}`. -->
+
+
 ## {{Where this fits}}
 
 <!-- OPTIONAL. Keep only if the subject is easy to learn in isolation and misuse

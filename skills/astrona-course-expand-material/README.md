@@ -26,39 +26,45 @@ Drop the folder at `~/.claude/skills/astrona-course-expand-material/` (or
 
 ## What it does
 
-1. **Resolve the target.** Works on a course module by default.
-   - Takes `<section-id>` and `<module-id>`. **If either is missing, the skill
-     asks for it** — one prompt naming both, no guessing from the working
-     directory.
-   - Resolves from the course root:
+1. **Resolve the target.**
+   - **One module** — `<section-id>` **and** `<module-id>`. Resolves
      `<course-root>/sections/<section-id>/<module-id>/course.md` (`courses.md` /
-     `COURSES.md` also accepted). `<course-root>` is the current dir unless
-     named. The file must exist or the skill stops and reports the path.
-   - Expanded **in place** in that file.
-   - Only loose notes with no course context skip this: returned as one
-     copy-ready Markdown chapter in a fenced block, playground steps skipped.
+     `COURSES.md` accepted; `<course-root>` = current dir unless named). File
+     must exist or the skill stops and reports the path. Expanded **in place**.
+   - **Whole section (batch)** — `<section-id>` with **no** `<module-id>`, or
+     "all modules in section …". `scripts/list_section_modules.sh` lists every
+     module and its playground status; the skill shows that list + the
+     playground policy and gets both confirmed before touching a file, then
+     processes the modules one at a time.
+   - **Neither id** — the skill asks for `<section-id>` and whether it is one
+     module or the section. No guessing from the working directory.
+   - **Loose notes, no course context** — returned as one fenced chapter,
+     playground steps skipped.
 
-2. **Check the playground link** with
-   `scripts/playground_status.sh`. A module is linked when
-   `sections/<…>/playground/` exists next to the course file, or the course file
-   carries the `<!-- astrona:playground -->` callout (or a `## Playground`
-   heading) — the same marker `astrona-course-lab` inserts when it scaffolds a
-   playground.
+2. **Check the playground link** with `scripts/playground_status.sh`. Linked =
+   `sections/<…>/playground/` exists next to the course file, or the file
+   carries the `<!-- astrona:playground -->` callout (the marker
+   `astrona-course-lab` inserts).
 
-3. **No playground → stop and offer choices:**
-   1. Set one up — `/astrona-course-lab create playground <section-id> <module-id>`,
-      then re-run this skill (recommended).
-   2. Expand without a playground — plain reading material.
-   3. Do nothing.
+3. **Playground policy for NOT_LINKED modules** — settled once and reused for
+   the whole run:
+   - **auto-create** — run
+     `/astrona-course-lab create playground <section-id> <module-id>`, wait for
+     `playground/`, expand woven. Creation fails → plain chapter + recorded
+     reason.
+   - **plain** — expand as plain reading material, no checkpoints.
+   - **ask** — decide per module (single-module runs only).
 
-4. **Playground linked → expand with checkpoints.** Each concept is explained in
-   plain language first, then a `> [!TIP]` **Try it** block gives the command to
-   run in the already-running playground, the representative output, and one line
-   connecting what the reader sees to the idea. The existing playground callout
-   under the H1 is left untouched. No grading language — a playground has no
-   task, no `astrona submit`, no pass/fail.
+   The user can pre-authorize in the invocation ("yes, auto-create
+   playgrounds"). A single NOT_LINKED module with no pre-authorization gets the
+   3-way prompt; a batch is asked for **auto-create / plain** once, up front.
 
-5. **Validate** with `scripts/validate_chapter.py FILE [--module] [--with-playground]`.
+4. **Expand.** LINKED (or just auto-created) → concept → `> [!TIP]` **Try it**
+   loop, callout left untouched, no grading language. Plain → sections 4–5 only.
+
+5. **Validate** each file with
+   `scripts/validate_chapter.py FILE [--module] [--with-playground]`. In a
+   batch, a validation error on one module does not stop the others.
 
 ## Chapter shape (module course.md)
 
@@ -80,7 +86,15 @@ covered.
 ## Usage
 
 ```
+# one module
 Use astrona-course-expand-material to expand net-basics static-routing's course.md.
+
+# whole section, auto-create any missing playgrounds
+Use astrona-course-expand-material on all modules in section net-basics —
+yes, auto-create playgrounds where missing.
+
+# whole section, no playground creation
+Expand every module in section net-basics as plain reading material.
 ```
 
 ```
@@ -89,11 +103,20 @@ LINKED       dir=yes callout=yes file=./sections/net-basics/static-routing/cours
 
 $ scripts/playground_status.sh path/to/module/course.md
 NOT_LINKED   dir=no callout=no file=path/to/module/course.md
+
+$ scripts/list_section_modules.sh . net-basics
+static-routing    LINKED        ./sections/net-basics/static-routing/course.md
+dynamic-routing   NOT_LINKED    ./sections/net-basics/dynamic-routing/course.md
+firewalls         LINKED        ./sections/net-basics/firewalls/course.md
+section net-basics: 3 module(s) — 2 linked, 1 without a playground
 ```
 
-`playground_status.sh` takes either `<course-root> <section-id> <module-id>` or a
-path to the course file or the module dir. Status is printed to stdout; exit is
-`0` on success, `2` on bad args or a missing course file.
+`playground_status.sh` takes `<course-root> <section-id> <module-id>` or a path
+to the course file or module dir. `list_section_modules.sh` takes
+`<course-root> <section-id>` or a path to the section dir and prints one
+tab-separated row per module (`<module-id>  LINKED|NOT_LINKED  <course-file>`)
+plus a summary on stderr. Both exit `0` on success, `2` on bad args / missing
+path / no modules.
 
 ## Validator
 
@@ -109,6 +132,7 @@ deterministic checks:
 | No `## Step-by-step` section | always |
 | No `Check your understanding` heading or `<summary>Answer</summary>` quiz block | always |
 | No closing `Keep going` / `Next steps` / `What's next` section | always |
+| `astrona ssh` names the real VM `astro-<slug>` (not a bare slug) | always |
 | No two `> [!TIP]` checkpoints in a row (a bare heading between them does not count as explanation) | always |
 | Rejects `Guided Practice Lab`, `astrona submit`, `astrona test`, `PROCTOR:` | always |
 | Rejects `astrona run`, `astrona destroy` | rejected without `--with-playground`; allowed with it (callout + Try it blocks) |
@@ -133,6 +157,7 @@ astrona-course-expand-material/
 │   └── playground-weaving.md             # interleaving text with Try-it checkpoints
 ├── scripts/
 │   ├── playground_status.sh              # is this module linked to a playground?
+│   ├── list_section_modules.sh           # enumerate a section's modules + status (batch mode)
 │   └── validate_chapter.py               # structural validator
 ├── assets/
 │   ├── chapter-template.md               # plain chapter skeleton
@@ -155,3 +180,10 @@ astrona-course-expand-material/
   `astrona-course-generate-assessment`'s job; a chapter ends when the subject is
   covered.
 - The prose must teach the chapter on its own; Try-it checkpoints are additive.
+- **Batch mode** processes a section's modules one at a time, in listed order,
+  with the module list and playground policy confirmed up front. One module's
+  validation error does not stop the rest. `auto-create` that fails for a module
+  (no `astrona` CLI, scaffold error) falls back to a plain chapter for that
+  module and records why. The run ends with a per-module report table.
+- Playground creation is delegated to `astrona-course-lab` — this skill never
+  scaffolds a playground itself; it invokes that skill and waits.

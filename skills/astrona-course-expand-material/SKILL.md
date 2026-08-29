@@ -1,6 +1,6 @@
 ---
 name: astrona-course-expand-material
-description: Expand rough, terse, or lab-oriented technical notes into accurate beginner-friendly course chapters. Works on a course module's course.md in place and weaves in hands-on "try it" checkpoints when the module has a linked playground; when it has none, it reports that and offers to set one up. Use for conceptual reading material; do not use when the user wants a guided lab, unguided challenge, assessment, or accuracy-only review.
+description: Expand rough, terse, or lab-oriented technical notes into accurate beginner-friendly course chapters. Works on a single course module's course.md in place, or every module in a section, and weaves in hands-on "try it" checkpoints when a module has a linked playground; when it has none it offers to auto-create one (via astrona-course-lab) or expand plain. Use for conceptual reading material; do not use when the user wants a guided lab, unguided challenge, assessment, or accuracy-only review.
 ---
 
 # Course Expand Material
@@ -11,37 +11,59 @@ Create standalone reading material that teaches the supplied topic without assum
 
 ## 1. Resolve the target
 
-This skill works on a **course module** by default.
+This skill works on a **course module** by default. `<course-root>` is the current directory unless the user names another. Course files: `course.md`, or `courses.md` / `COURSES.md` — treat as the same file.
 
-1. Take `<section-id>` and `<module-id>` from the invocation. **If either is missing, ask the user for it — one prompt, explicitly naming both. Never guess, never infer from the working directory or open files.**
-2. Resolve from the course root: `<course-root>/sections/<section-id>/<module-id>/course.md` (accept `courses.md` / `COURSES.md` as the same file). `<course-root>` is the current directory unless the user names another.
-3. Confirm that file exists before doing anything. If it does not, stop and report the exact path you looked for.
-4. Expand **in place** in that file.
+**One module** — the invocation gives `<section-id>` **and** `<module-id>`:
 
-**Only** when the user supplies loose notes with no course context and no ids: expand and return one copy-ready Markdown chapter inside a four-backtick `markdown` fence, and skip every playground step below.
+1. Resolve `<course-root>/sections/<section-id>/<module-id>/course.md`.
+2. Confirm it exists. If not, stop and report the exact path.
+3. Expand **in place** in that file.
+
+**A whole section (batch)** — the invocation gives `<section-id>` with **no** `<module-id>`, or says "all modules in section …":
+
+1. Run `scripts/list_section_modules.sh <course-root> <section-id>`. It prints one line per module (`<module-id>  LINKED|NOT_LINKED  <course-file>`).
+2. Show the user that list and the playground-policy question from section 2b, and get both confirmed **before touching any file**.
+3. Then process the modules one at a time per section 8.
+
+**Neither id given** — ask the user for `<section-id>`, and whether they want one module (which one) or the whole section. Never guess, never infer ids from the working directory or open files.
+
+**Loose notes with no course context and no ids** — expand and return one copy-ready Markdown chapter inside a four-backtick `markdown` fence; skip every playground step below.
 
 ## 2. Check the playground link
 
+### 2a. Per module
+
 Run `scripts/playground_status.sh <course-root> <section-id> <module-id>` (or `scripts/playground_status.sh <path-to-course-file-or-module-dir>`). It prints `LINKED` or `NOT_LINKED`. A module counts as linked when `sections/<…>/playground/` exists next to the course file, or the course file carries the `<!-- astrona:playground -->` callout (or a `## Playground` heading).
 
-## 3a. NOT_LINKED — stop and offer choices
+### 2b. Playground policy — what to do about NOT_LINKED modules
 
-Do **not** expand yet. The woven chapter is the point of this skill; a plain chapter is a fallback. Report to the user, verbatim intent:
+Settle this once, up front, and reuse it for every module in the run:
 
-> This module has no linked playground. The chapter reads best when the reader can run what they read. Pick one:
-> 1. **Set one up** (recommended) — `/astrona-course-lab create playground <section-id> <module-id>`, then re-run this skill. You get concept → run it → observe → connect, in one pass.
-> 2. **Expand without a playground** — plain reading material, no hands-on checkpoints.
-> 3. **Do nothing.**
+- **auto-create** — for each NOT_LINKED module, run `/astrona-course-lab create playground <section-id> <module-id>`, wait for `playground/`, then expand woven (3b). If creation fails (no `astrona` CLI, scaffold error), fall back to a plain chapter for that module and record why.
+- **plain** — skip playground creation; expand every NOT_LINKED module as a plain chapter (sections 4–5, no Try-it).
+- **ask** — decide per module (single-module runs only; do not use for a batch).
 
-Wait for the answer. On (1), after `playground/` exists, continue at 3b. On (2), produce the chapter under sections 4 and 5 only (no Try-it checkpoints). On (3), stop.
+The user may pre-authorize a policy in the invocation ("yes, auto-create playgrounds", "expand plain, don't make playgrounds"). If they did, use it without prompting. Otherwise:
 
-## 3b. LINKED — expand with hands-on checkpoints
+- **Single module, NOT_LINKED** — present the choices and wait:
+
+  > This module has no linked playground. The chapter reads best when the reader can run what they read. Pick one:
+  > 1. **Set one up** (recommended) — auto-create a playground, then expand with hands-on checkpoints.
+  > 2. **Expand without a playground** — plain reading material, no checkpoints.
+  > 3. **Do nothing.**
+
+- **Batch** — ask for the policy (**auto-create** / **plain**) once, before starting. Not per module.
+
+A LINKED module always goes straight to 3b regardless of policy.
+
+## 3b. Expand with hands-on checkpoints (LINKED module, or one just auto-created)
 
 Read [references/playground-weaving.md](references/playground-weaving.md) before drafting. Adapt [assets/chapter-with-playground-template.md](assets/chapter-with-playground-template.md).
 
 - Explain each concept in plain language **first** (concrete before abstract), then add one **Try it** checkpoint for concepts that have something observable — the exact command to run in the already-running playground, the representative output, and one line tying what the reader sees back to the idea.
 - **One explained concept, then at most one checkpoint. Never two `> [!TIP]` blocks in a row.** Before every checkpoint the reader must already have the idea, its terms, and know what they are about to see and why. If two things are worth trying, write the prose that sets up the second one before its block — do not stack them and leave the reader guessing what the second block is for.
 - Leave the existing `<!-- astrona:playground -->` callout where the lab skill placed it (just under the H1). Do not move, duplicate, or rewrite it. Checkpoints assume the environment is already up from that callout's `astrona run` line — never re-teach startup, SSH boilerplate, or teardown per checkpoint.
+- **The running machine is named `astro-<slug>`, not `<slug>`** (Astrona prefixes it). Any command that takes the environment name — `astrona ssh`, `astrona destroy` — uses `astro-<slug>`, where `<slug>` is `metadata.name` in the playground's `config.yaml`. See [references/playground-weaving.md](references/playground-weaving.md).
 - No grading language: a playground has no task, no `astrona submit`, no pass/fail.
 - Not every heading needs a checkpoint. If a concept cannot be shown in the playground as provisioned, say so plainly rather than inventing a command.
 
@@ -89,4 +111,20 @@ The validator does not check for pitfalls, recaps, or "where this fits" — thos
 
 ## 7. Report
 
-State what changed: sections added or restructured, how many **Try it** checkpoints were added, whether pitfalls / where-it-fits were included and why (or why not), and the playground status (linked / newly created / none by user choice).
+**Single module** — state what changed: sections added or restructured, how many **Try it** checkpoints were added, whether pitfalls / where-it-fits were included and why (or why not), and the playground status (linked / newly created / none by user choice).
+
+**Batch** — one row per module: `module-id | playground: linked|created|failed→plain|plain | checkpoints: N | validator: pass|<errors> | notes`. Then a one-line total and the CLI version any playgrounds were built for.
+
+## 8. Batch mode (whole section)
+
+Only after section 1 listed the modules and section 2b fixed the policy, both confirmed by the user.
+
+1. Process modules **one at a time**, in the listed order. For each:
+   a. Re-read that module's `course.md`.
+   b. `LINKED` → expand woven (3b). `NOT_LINKED` → apply the policy: **auto-create** runs `/astrona-course-lab create playground <section-id> <module-id>`, waits for `playground/`, then 3b; on failure, fall back to a plain chapter and record the reason. **plain** → plain chapter (sections 4–5).
+   c. Apply sections 4 and 5. Save in place.
+   d. Run section 6 validation with the right flags for how it was expanded.
+2. **A validation error on one module does not stop the batch.** Fix what you can, record the rest, move on.
+3. Keep each module's expansion self-contained — no cross-references to sibling modules unless the source `course.md` already had them.
+4. Under the `auto-create` policy the `astrona-course-lab` skill reports which CLI version each playground was built for — surface that so the user can anchor later upgrades.
+5. When every module is done, give the section 7 batch report. Do not claim a playground was created or a lab command ran unless it actually did.

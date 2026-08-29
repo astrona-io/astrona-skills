@@ -77,6 +77,14 @@ playground callout uses `> [!NOTE]`.
   repeat startup, SSH login boilerplate, `kubectl config use-context`, or
   `astrona destroy`.
 - **Leave the callout alone.** Do not move it, duplicate it, or restyle it.
+- **The VM / environment name is prefixed `astro-`.** Astrona runs the machine
+  as `astro-<slug>`, not `<slug>`. Every command that takes the environment name
+  — `astrona ssh`, `astrona list` output, `astrona destroy` — must use
+  `astro-<slug>`. `<slug>` is `metadata.name` in the playground's `config.yaml`.
+  For a qemu playground, give the reader the shell command **once** (in "Before
+  you start" or the first checkpoint that needs it) as
+  `astrona ssh astro-<slug>`; later checkpoints just show the command to run
+  inside the VM. Example: `astrona ssh astro-net-basics-static-routing-playground`.
 - **No grading.** A playground has no task, no `astrona submit`, no
   `PROCTOR: PASS`, no pass/fail verdict. Never imply the reader is being scored.
 - **Safe and repeatable commands.** Prefer read-only inspection. If a command

@@ -15,8 +15,9 @@
                     grading framing.
 
 Always rejected: guided step-by-step sections, `Check your understanding` /
-hidden-answer `<details>` quiz blocks, and closing `Keep going` / `Next steps`
-sections. Those belong to other skills or nowhere in a chapter.
+hidden-answer `<details>` quiz blocks, closing `Keep going` / `Next steps`
+sections, and `astrona ssh <name>` where `<name>` is not the real VM name
+`astro-<slug>`.
 """
 
 from pathlib import Path
@@ -111,6 +112,16 @@ def main() -> int:
             "closing 'Keep going' / 'Next steps' section — a chapter ends when "
             "the subject is covered"
         )
+
+    # The running Astrona machine is named `astro-<slug>`. Any `astrona ssh`
+    # that names something without the prefix is wrong.
+    for m in re.finditer(r"\bastrona\s+ssh\s+([^\s`]+)", text):
+        name = m.group(1).strip("\"'")
+        if not name.startswith("astro-"):
+            errors.append(
+                f"'astrona ssh {name}' — the VM is named 'astro-<slug>'; "
+                f"use 'astrona ssh astro-{name}'"
+            )
 
     if text.count("```") % 2:
         errors.append("unbalanced fenced code block")
