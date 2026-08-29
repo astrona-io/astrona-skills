@@ -95,10 +95,28 @@ two stay linked.
    - Note the tools/packages the module needs so `bootstrap/prepare.sh` can
      preinstall them.
 4. Scaffold:
-   `scripts/scaffold_playground.sh --section <section-id> --module <module-id> --runtime kind|qemu [--course-root .] [--slug <slug>] [--title "<title>"]`.
+   `scripts/scaffold_playground.sh --section <section-id> --module <module-id> --runtime kind|qemu [--course-root .] [--slug <slug>] [--title "<title>"] [--repo-url <https url>] [--branch <name>] [--git-url <ssh url>]`.
    This copies `assets/playground/` into the module's `playground/`, fills the
-   template vars, adds a `runtime:` block for `qemu`, and appends a
-   `## Playground` section to `courses.md` linking the folder.
+   template vars, adds a `runtime:` block for `qemu`, and inserts a **playground
+   callout** into `courses.md` right under the module title.
+   - **If `playground/` already exists** the script stops (exit 3) without
+     touching anything. Ask the user whether to update it. For one part prefer
+     `update <part> <section-id> <module-id> playground`; only re-run with
+     `--force` if they want the whole thing regenerated.
+   - **The callout link must be an absolute repo browse URL**, not
+     `./playground/` — `courses.md` is read on GitHub / GitLab / the Astrona
+     site, not a local clone. The script resolves it from `--repo-url`, else
+     the module's git `origin` remote (from the `.git` it finds by walking up
+     the folder structure). Finds neither → relative link + warning; then ask
+     the user for the course repo URL and re-run with `--repo-url` (add
+     `--branch` if not `main`).
+   - The callout's `astrona run` uses `--git <ssh url> -c <repo-root path>` so a
+     reader who never cloned can copy-paste it (`--git-url` overrides the ssh
+     URL derived from `origin`). `astrona destroy` uses the **environment name**
+     (the slug), not the config path.
+   - Placement is a `> [!NOTE]` alert (blue info box on GitHub) just below the
+     H1, so the playground is visible up front, not buried at the bottom. If the
+     script had to fall back (no H1) confirm it reads well.
 5. Fill in the generated files:
    - `bootstrap/prepare.sh` — install the module's tools, seed sample data.
      Environment prep only; there is nothing to grade, and don't pre-build a
@@ -108,8 +126,11 @@ two stay linked.
    - `docs/overview.md` — what is in the box and a few open-ended things to try.
 6. Run `scripts/validate_lab.py <section-id> <module-id> playground` and resolve
    every error.
-7. Report the tree, the `courses.md` link, and the CLI version the playground
-   targets.
+7. Open `courses.md`, confirm the callout sits just under the title and reads
+   well, the link is an absolute repo URL, and the `run` / `destroy` commands
+   are right (absolute `--git` URL, repo-root `-c` path, `destroy <slug>`).
+8. Report the tree, the `courses.md` callout link, and the CLI version the
+   playground targets.
 
 ## update <part> <target>
 
@@ -144,7 +165,7 @@ actually ran here.
 
 Not applicable to a playground — there is no grading. Use `validate` and, if you
 want to see it come up, `astrona run -c <resolved-dir>/playground` then
-`astrona destroy`.
+`astrona destroy <slug>` (the environment name, not the config path).
 
 ## Blueprint cache
 

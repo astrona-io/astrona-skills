@@ -20,5 +20,7 @@ and no pass/fail. Explore, break things, `astrona destroy`, start over.
 ## When you're done
 
 ```sh
-astrona destroy -c .
+astrona destroy {{slug}}
 ```
+
+(`astrona destroy` takes the environment name, not the config path.)

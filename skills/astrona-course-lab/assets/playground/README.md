@@ -14,10 +14,12 @@ you can explore the module's topic on a clean machine. Nothing to submit.
 
 ```sh
 astrona run -c .
-astrona destroy -c .
+astrona destroy {{slug}}
 ```
 
-`astrona submit` and `astrona test` do not apply — there is no grading.
+`astrona destroy` takes the environment name (`metadata.name` = `{{slug}}`), not
+the config path. `astrona submit` and `astrona test` do not apply — there is no
+grading.
 
 ## Layout
 

@@ -11,10 +11,11 @@ never needs to clone that repo. If a command below behaves differently, trust
 | `astrona content init ats <path> --slug S --path-id ID --title T --author-name N [--repo URL] [--description D]` | Scaffold a lab from a blueprint git repo. `ats` is the CLI's content-type token. Without `--repo` it clones `git@github.com:astrona-io/training-sandbox-blueprint.git`. The skill always passes `--repo <cached blueprint>`. |
 | `astrona content validate ats <dir-or-git-url> [--git-ref REF]` | Accepted but returns "validation for content type ats is not yet implemented" on current CLI. Use `scripts/validate_lab.py` as the real gate. |
 | `astrona content build atp ...` | ATP only — not used here. |
-| `astrona run -c <dir>` | Spin up the lab environment. Returns once SSH/bootstrap is ready; env keeps running. |
+| `astrona run -c <dir>` | Spin up the lab environment from a local dir. Returns once SSH/bootstrap is ready; env keeps running. |
+| `astrona run --git <url> -c <path>` | Same, but clone `<url>` first and read the lab at `<path>` (relative to the repo root), e.g. `astrona run --git ssh://git@github.com/astrona-io/ATS003.git -c sections/section-020/module-01/playground`. Lets a reader who never cloned the course run it. |
 | `astrona submit -c <dir>` | Send work to the Proctor for grading. |
 | `astrona test -c <dir> --junit-xml=report.xml` | CI lifecycle: bootstrap → apply `solution/` → submit → teardown. Proves the lab's own grading passes. |
-| `astrona destroy -c <dir>` | Tear down (both the normal run and any `astrona test` run). |
+| `astrona destroy <name>` | Tear down the running environment by its name (`metadata.name`, i.e. the slug) — what `run` reports. Works for a normal run or an `astrona test` run. `astrona destroy -c <dir>` also works when you have the dir. |
 | `astrona list` / `astrona ssh <name>` | Inspect / shell into running qemu VMs. |
 | `astrona check` | Verify local deps before `run`/`test`. |
 | `astrona --version` | `astrona version <ver>` — `<ver>` is `developer` for local dev builds, else `vX.Y.Z`. |
