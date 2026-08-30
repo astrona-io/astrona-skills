@@ -171,6 +171,12 @@ astrona-course-expand-material/
 - **Every element earns its place.** Objectives, prerequisites, analogies,
   warnings, recaps — each is added because this subject needs it, never because
   a template has the slot. A short honest chapter beats a padded one.
+- **Explain the subject's commands, not the plumbing.** A command the module
+  teaches (`vgs`, `pvs`, `ip`, `systemctl` …) gets: what it does, how to read
+  its name (expand the abbreviation), and a memory hook tied to the model —
+  then real output. Generic shell commands (`ls`, `cd`, `sudo`, `mkdir`) are
+  assumed known and left unexplained. See
+  [`references/chapter-style.md`](references/chapter-style.md).
 - Do not add invented facts, citations, labs, quizzes, or a next chapter without
   a request.
 - **Try it** checkpoints are optional, ungraded, and reference a running
@@ -187,3 +193,7 @@ astrona-course-expand-material/
   module and records why. The run ends with a per-module report table.
 - Playground creation is delegated to `astrona-course-lab` — this skill never
   scaffolds a playground itself; it invokes that skill and waits.
+- **Astrona qemu conventions** a woven chapter must respect: the running VM is
+  `astro-<slug>` (used by `astrona ssh` / `astrona destroy`); in disk listings
+  `vda` = primary/OS disk, `vdb` = ~366K cloud-init disk, anything after =
+  attached in `config.yaml`. Confirm against the running playground, not memory.

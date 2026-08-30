@@ -64,6 +64,7 @@ Read [references/playground-weaving.md](references/playground-weaving.md) before
 - **One explained concept, then at most one checkpoint. Never two `> [!TIP]` blocks in a row.** Before every checkpoint the reader must already have the idea, its terms, and know what they are about to see and why. If two things are worth trying, write the prose that sets up the second one before its block — do not stack them and leave the reader guessing what the second block is for.
 - Leave the existing `<!-- astrona:playground -->` callout where the lab skill placed it (just under the H1). Do not move, duplicate, or rewrite it. Checkpoints assume the environment is already up from that callout's `astrona run` line — never re-teach startup, SSH boilerplate, or teardown per checkpoint.
 - **The running machine is named `astro-<slug>`, not `<slug>`** (Astrona prefixes it). Any command that takes the environment name — `astrona ssh`, `astrona destroy` — uses `astro-<slug>`, where `<slug>` is `metadata.name` in the playground's `config.yaml`. See [references/playground-weaving.md](references/playground-weaving.md).
+- **Disk output.** On a qemu playground `vda` is the primary/OS disk, `vdb` is the small (~366K) cloud-init disk, and anything after that is a disk attached in `config.yaml`. Label `lsblk` / `fdisk` output that way; do not call `vdb` spare storage or invent attached disks. See [references/playground-weaving.md](references/playground-weaving.md).
 - No grading language: a playground has no task, no `astrona submit`, no pass/fail.
 - Not every heading needs a checkpoint. If a concept cannot be shown in the playground as provisioned, say so plainly rather than inventing a command.
 
@@ -93,9 +94,10 @@ Do **not** add "Check your understanding" prompts, recall questions, `<details>`
 3. Correct clear inaccuracies and soften claims that are not universally true.
 4. Define unfamiliar terms before using them and explain the mental model before commands. Precede every general rule or definition with one concrete instance.
 5. At most one analogy per hard concept. Flag it as an analogy and state where it breaks down. No analogy is better than one the reader will over-extend.
-6. Remove guided-lab headings, root-shell setup, and graded exercises unless requested. (Playground **Try it** checkpoints from section 3b are optional, ungraded, and reference a running sandbox — they are not guided-lab framing.)
-7. Retain useful commands as reference examples. State the shell / host / context each command block assumes. Explain arguments, side effects, privileges, temporary state, and persistent alternatives when relevant.
-8. Treat addresses, hostnames, interface names, and command output as examples. Warn before a command that can interrupt networking or a remote session.
+6. **Explain the subject's commands, not the plumbing.** A command central to this module (e.g. `pvs` / `vgs` / `lvs` in an LVM module, `ip` / `bridge` in a routing module) gets, on first use: what it does, how to *read its name* (expand the abbreviation), and a memory hook tied to the underlying model — then shown on real output. Generic shell commands the module does not teach (`ls`, `cd`, `sudo`, `mkdir`, `cat`, an editor) are assumed known: do not define, expand, or footnote them. A genuinely obscure but load-bearing flag on such a command gets one short clause, not a paragraph. See [references/chapter-style.md](references/chapter-style.md).
+7. Remove guided-lab headings, root-shell setup, and graded exercises unless requested. (Playground **Try it** checkpoints from section 3b are optional, ungraded, and reference a running sandbox — they are not guided-lab framing.)
+8. Retain useful commands as reference examples. State the shell / host / context each command block assumes. Explain arguments, side effects, privileges, temporary state, and persistent alternatives when relevant.
+9. Treat addresses, hostnames, interface names, and command output as examples. Warn before a command that can interrupt networking or a remote session.
 
 Read [references/chapter-style.md](references/chapter-style.md) before drafting. Do not add invented facts, citations, labs, quizzes, or a next chapter without a request.
 

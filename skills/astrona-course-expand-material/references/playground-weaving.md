@@ -92,6 +92,16 @@ playground callout uses `> [!NOTE]`.
   that can drop networking or the current session.
 - **Output is an example.** Hostnames, IPs, interface names, IDs, and timing all
   vary — say so.
+- **Disk layout on a qemu playground.** When a checkpoint shows `lsblk`,
+  `fdisk -l`, or similar, label the virtio disks by their fixed Astrona roles:
+  `vda` is the primary disk (root / OS); `vdb` is the small (~366K) cloud-init
+  config disk — not a spare or data disk; `vdc`, `vdd`, … are disks explicitly
+  attached to the VM in `playground/config.yaml`. Do not describe `vdb` as
+  usable storage, and do not invent attached disks the config does not define.
+  If the module teaches storage and needs a real extra disk, the playground
+  config must add one — otherwise say the playground cannot show it. Confirm the
+  layout against the running playground (and the `astrona` CLI behaviour), not
+  from memory.
 - **No invention.** If the playground as provisioned cannot show a concept
   (missing tool, different runtime), state that plainly instead of writing a
   command that will not work. If it looks like the playground *should* cover it,
