@@ -1,3 +1,9 @@
+---
+title: <lab title without " Lab">
+estimated_duration: <15m>
+summary: <One sentence about the task.>
+---
+
 # Question
 
 Solve this question on: `terminal`

@@ -1,3 +1,9 @@
+---
+title: Terminal
+order: 10
+summary: <One sentence: how this solution solves the task.>
+---
+
 # Solution Walkthrough
 
 <What you will do, on which node(s), and what stays untouched.>

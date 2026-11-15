@@ -9,7 +9,13 @@ A Claude Code skill that rewrites an Astrona lab's **`question.md`** and
 - **solution.md** → a beginner-safe walkthrough (no assumed shell shortcuts)
   built around an `astrona submit` feedback loop: a memory table of the concepts,
   then steps that each turn one or more checks green, then a troubleshooting
-  section.
+  section. It starts with `title` / `order` / `summary` front matter.
+- **solution.\<name\>.md** (optional) → one more full walkthrough per extra
+  practical approach (CLI vs web UI), offered when the task has more than one
+  way; screenshots in `images/` next to it (PNG/JPEG/WebP/GIF, no SVG).
+
+`question.md` starts with `title` / `estimated_duration` / `summary` front
+matter that matches the lab's entry in the training's `astrona.yaml`.
 
 Everything is derived from the lab's own `validation/*.sh` — not from the
 course chapter, which in ATS labs often covers a narrower or different topic.
@@ -46,7 +52,7 @@ Then invoke:
 | `references/solution-style.md` | the `solution.md` contract (feedback loop, memory table, plain-command rules) |
 | `assets/question-template.md` | skeleton |
 | `assets/solution-template.md` | skeleton |
-| `scripts/check_lab_docs.sh` | lint rewritten `lab-01/` dirs for the defects this skill prevents |
+| `scripts/check_lab_docs.sh` | lint rewritten lab dirs (front matter, every `solution*.md`, images) for the defects this skill prevents |
 
 ## Relationship to `astrona-course-lab`
 

@@ -7,6 +7,12 @@ explains *how*.
 ## Shape
 
 ```markdown
+---
+title: <the lab's astrona.yaml title without the trailing " Lab">
+estimated_duration: <the lab's astrona.yaml estimated_duration, e.g. 15m>
+summary: <one sentence about the task>
+---
+
 # Question
 
 Solve this question on: `<node>`
@@ -29,6 +35,15 @@ off-limits, what is already in place.>
 
 ## Rules
 
+- **Front matter comes first**, with exactly these keys:
+  - `title` — the readable lab title astrona shows. Take the lab's `title`
+    from the training's `astrona.yaml` and drop a trailing ` Lab`
+    (`Scrape Pods With A PodMonitor Lab` → `Scrape Pods With A PodMonitor`).
+    `metadata.name` in `config.yaml` stays the identifier; never change it.
+  - `estimated_duration` — the same value as the lab's `astrona.yaml` entry.
+  - `summary` — one sentence about the task, no grading details.
+  If the lab has no `astrona.yaml` entry, ask the user for the title and
+  duration rather than guessing.
 - **`Solve this question on:`** names the node.
   - Single unnamed `qemu`/`kind` node → `` `terminal` ``.
   - Named nodes → the name(s) the learner works on, e.g. `` `target` `` or

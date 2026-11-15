@@ -7,6 +7,12 @@ should always know which checks are green.
 ## Shape
 
 ```markdown
+---
+title: Terminal
+order: 10
+summary: <one sentence: how this solution solves the task>
+---
+
 # Solution Walkthrough
 
 <1–2 sentences: what you will do, on which node(s), and what stays untouched
@@ -65,6 +71,29 @@ astrona submit --git <repo-git-url> -c <lab-path>
 
 - **`<check>` fails — <symptom>.** <cause>. <fix>.
 ```
+
+## Front matter
+
+Every solution file starts with it:
+
+- `title` — the name in the solution menu: the approach (`Terminal`,
+  `Web UI`, `Helm`), not the lab title.
+- `order` — an integer, lowest first, in steps of 10. The default
+  `solution.md` is `10`; extra solutions `20`, `30`, ….
+- `summary` — one sentence shown under the title in the menu.
+
+## Extra solutions (`solution.<name>.md`)
+
+One file per extra practical approach, next to `config.yaml`, `<name>` in
+lower-case kebab-case. Each follows this whole style guide on its own: the
+same front matter, memory table, feedback loop, steps, checks and "If a check
+stays red". It covers the task start to finish; it never sends the learner to
+another solution for part of the work.
+
+Screenshots go in `images/` next to the file and are linked by relative path,
+`![Deployment form](images/web-ui-deployment-form.png)`. PNG, JPEG, WebP or
+GIF only, never SVG. Give every image alt text that says what it shows, and
+state in words what to click so the step works without the picture.
 
 ## The memory table
 
@@ -126,8 +155,10 @@ wrong file / wrong node" trap, and a clean-slate reset if one exists
 
 ## Optional extras
 
-- A `>` blockquote for an alternative tool path (NetworkManager instead of
-  Netplan) when a validator accepts either — tell them to use one, not both.
+- A `>` blockquote for a small alternative (NetworkManager instead of
+  Netplan for one command) when a validator accepts either — tell them to use
+  one, not both. A whole different way of doing the task (a web UI instead of
+  the CLI) is an extra `solution.<name>.md` instead.
 - A `>` note for good practice the lab does not grade (persisting an nftables
   ruleset), clearly marked "not required to pass".
 
