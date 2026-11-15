@@ -62,6 +62,8 @@ guess. Confirm the resolved directory exists before acting.
 4. Fill in the generated files against the inputs:
    - `config.yaml` — set `metadata.name`, wire `bootstrap.init`, `testing.manifests` (reference solution), `validation.checks` + `validation.script`. For `qemu`, add the `runtime:` block per [references/astrona-cli.md](references/astrona-cli.md).
    - `docs/prerequisites.md`, `docs/exam-question.md`, `docs/case-study.md`, `docs/step-by-step-guide.md` — real content, not placeholders.
+   - The question file (`question.md`, or `docs/exam-question.md` here) starts with front matter `title` (the lab's `astrona.yaml` title without a trailing ` Lab`; else the **title** input), `estimated_duration` (same as `astrona.yaml`) and `summary` (one sentence). `metadata.name` stays the identifier; the title never replaces it.
+   - The solution (`metadata.docs.solution`, old key `guide`, else `solution.md`) is the default walkthrough, normally the terminal way. When the task has more than one practical way (CLI vs web UI, `kubectl` vs Helm), offer one extra `solution.<name>.md` per approach next to `config.yaml` — see [Solutions](references/lab-design.md#solutions). For the exam-style rewrite of these docs use `astrona-course-lab-docs`.
    - `bootstrap/setup.sh` — only pre-work; never pre-build the graded state.
    - `solution/` — the correct end state a perfect learner produces.
    - `validate.sh` — exits `0` pass / non-zero fail; check actual content/behaviour, not just existence.
@@ -138,7 +140,7 @@ two stay linked.
 per [Targeting course content](#targeting-course-content); resolve it to a
 directory first.
 
-1. Read the existing `config.yaml` and the target file. Keep `metadata`, IDs, and unrelated files untouched.
+1. Read the existing `config.yaml` and the target file. Keep `metadata`, IDs, and unrelated files untouched. `update solution`/`guide` regenerates the default solution only; an extra solution is `update solution <name> <target>` → `solution.<name>.md`, per [Solutions](references/lab-design.md#solutions).
 2. Regenerate only the named part, consistent with the rest of the lab.
 3. Re-run `scripts/validate_lab.py` on the same target.
 4. Show a diff summary of what changed.

@@ -13,6 +13,14 @@ set -u
 fail=0
 note() { printf '%s\n' "$*"; fail=1; }
 
+# front_matter <file>: print the YAML front matter block (between the leading
+# '---' lines), nothing when the file does not start with one.
+front_matter() {
+  awk 'NR==1 { if ($0 != "---") exit; next } $0 == "---" { exit } { print }' "$1"
+}
+# has_key <file> <key>: the front matter sets <key> to a non-empty value.
+has_key() { front_matter "$1" | grep -qE "^$2:[[:space:]]*[^[:space:]]"; }
+
 targets=()
 if [[ "${1:-}" == "--all" ]]; then
   while IFS= read -r d; do targets+=("$d"); done < <(find labs -type d -name 'lab-01' 2>/dev/null | sort)
@@ -27,6 +35,36 @@ for d in "${targets[@]}"; do
   [[ -s "$q" ]] || note "$d: question.md missing or empty"
   [[ -s "$s" ]] || note "$d: solution.md missing or empty"
   [[ -s "$q" && -s "$s" ]] || continue
+
+  # question.md front matter: the readable title, duration and summary
+  for k in title estimated_duration summary; do
+    has_key "$q" "$k" || note "$q: front matter has no '$k'"
+  done
+
+  # every solution file: solution.md plus any solution.<name>.md
+  sols=("$s")
+  while IFS= read -r f; do sols+=("$f"); done < <(find "$d" -maxdepth 1 -type f -name 'solution.*.md' | sort)
+  for f in "${sols[@]}"; do
+    base="${f##*/}"
+    if [[ "$base" != "solution.md" ]]; then
+      name="${base#solution.}"; name="${name%.md}"
+      [[ "$name" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]] || note "$f: solution name '$name' is not lower-case kebab-case"
+    fi
+    for k in title order summary; do
+      has_key "$f" "$k" || note "$f: front matter has no '$k'"
+    done
+    if has_key "$f" order; then
+      front_matter "$f" | grep -qE '^order:[[:space:]]*-?[0-9]+[[:space:]]*$' || note "$f: 'order' is not an integer"
+    fi
+    # images: relative paths that exist, never SVG
+    while IFS= read -r img; do
+      case "$img" in
+        http://*|https://*|/*) note "$f: image '$img' is not a relative path (use images/<file>)" ;;
+        *.svg|*.SVG) note "$f: image '$img' is SVG (use PNG, JPEG, WebP or GIF)" ;;
+        *) [[ -f "$d/$img" ]] || note "$f: image '$img' does not exist" ;;
+      esac
+    done < <(grep -oE '!\[[^]]*\]\([^) ]+' "$f" | sed -E 's/^!\[[^]]*\]\(//')
+  done
 
   # question.md must not carry a verification / grading section
   grep -qiE '^#+ *verification' "$q" && note "$q: has a Verification section (remove it)"
@@ -43,6 +81,7 @@ for d in "${targets[@]}"; do
   # solution.md must drive the astrona feedback loop with the grading command.
   # Form: astrona submit --git <url> -c labs/section-XXX/<mod>/lab-01
   want="labs/${d#labs/}"; want="${want%/}"
+  for s in "${sols[@]}"; do
   grep -qE "astrona submit --git \S+ -c $want(\s|\$)" "$s" || note "$s: no 'astrona submit --git <url> -c $want'"
   grep -q 'astrona test' "$s" && note "$s: uses 'astrona test' — the learner grading command is 'astrona submit'"
   grep -qE 'astrona submit -c labs/' "$s" && note "$s: 'astrona submit -c …' is missing the required --git <url>"
@@ -56,6 +95,7 @@ for d in "${targets[@]}"; do
 
   # shell-shortcut smell in learner-facing commands
   grep -qE '^[A-Z_]+=\"?\$\(' "$s" && note "$s: captures a value with \$( ) — spell it out for beginners"
+  done
 done
 
 if [[ $fail -eq 0 ]]; then
